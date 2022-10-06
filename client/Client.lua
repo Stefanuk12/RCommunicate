@@ -167,6 +167,25 @@ do
 end
 
 ----------- // Add your commands below
+local function MainCheck(Name, ExecutePlayer, Arguments)
+    -- // If we are the host, send the command out
+    if (ExecutePlayer == LocalPlayer) then
+        Websocket:Send({
+            ExecutePlayer = ExecutePlayer,
+            Command = Name,
+            Arguments = Arguments,
+
+            -- // not needed but why not
+            CommandHandlerConfig = CommandHandlerConfig
+        })
+        return true
+    end
+
+    -- // Make sure the person who said the command is the owner
+    if (ExecutePlayer ~= OwnerUserId) then
+        return true
+    end
+end
 
 -- // An example command
 CommandClass.new({
@@ -174,20 +193,8 @@ CommandClass.new({
     Description = "Execute code on each alt",
     Handler = Handler,
     Callback = function(ExecutePlayer, Arguments)
-        -- // If we are the host, send the command out
-        if (ExecutePlayer == LocalPlayer) then
-            return Websocket:Send({
-                ExecutePlayer = ExecutePlayer,
-                Command = "execute",
-                Arguments = Arguments,
-
-                -- // not needed but why not
-                CommandHandlerConfig = CommandHandlerConfig
-            })
-        end
-
-        -- // Make sure the person who said the command is the owner
-        if (ExecutePlayer ~= OwnerUserId) then
+        -- // Handles stuff
+        if (MainCheck("execute", ExecutePlayer, Arguments)) then
             return
         end
 
